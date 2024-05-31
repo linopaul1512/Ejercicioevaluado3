@@ -6,7 +6,7 @@ import crud, models, schemas
 from sqlApp.database import SessionLocal, engine
 from starlette.responses import RedirectResponse, HTMLResponse
 from starlette.status import HTTP_303_SEE_OTHER
-
+from fastapi import Depends
 # Crear todas las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
 
@@ -16,6 +16,7 @@ app = FastAPI()
 # Montar el directorio estático para servir archivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+#Ya 
 # Configurar Jinja2 para la renderización de plantillas
 templates = Jinja2Templates(directory="templates")
 
@@ -65,12 +66,12 @@ async def get_item(request: Request, item_id: int, db: Session = Depends(get_db)
     """
     Esta ruta maneja la solicitud GET a la URL "/items/{item_id}".
     Busca un item en la base de datos por su ID. Si el item no existe, lanza un HTTP 404.
-    Si el item existe, renderiza la plantilla 'item_edit.html', pasando el item a la plantilla.
+    Si el item existe, renderiza la plantilla 'detalles.item', pasando el item a la plantilla.
     """
     db_item = crud.item_id(db, item_id=item_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    return templates.TemplateResponse("item_edit.html", {"request": request, "item": db_item})
+    return templates.TemplateResponse("detalles.html", {"request": request, "item": db_item})
 
 # Ruta para mostrar el formulario de modificar item
 @app.get("/items/update/{item_id}", response_class=HTMLResponse)
